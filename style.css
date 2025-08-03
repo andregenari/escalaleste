@@ -7,7 +7,6 @@ input { padding: 4px; margin-top: 2px; font-size: 12px; }
 .table-wrapper { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 11px; }
 th, td { border: 1px solid #444; padding: 4px; min-width: 60px; vertical-align: top; text-align: center; }
-th.sem-titulo { width: 20px; }
 .subhead th { height: 4px; padding: 2px; }
 td input { width: 100%; border: none; background: transparent; font-size: 11px; padding: 2px; }
 .small { width: 25px; }
