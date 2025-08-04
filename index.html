@@ -2,10 +2,31 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Escala Ortopedia</title>
-  <link rel="stylesheet" href="style.css"/>
-  <!-- Bibliotecas para salvar em PDF -->
+  <style>
+    body { font-family: sans-serif; padding: 12px; }
+    h1 { text-align: center; margin-bottom: 8px; }
+    .cabecalho { margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th, td { border: 1px solid #444; padding: 4px; min-width: 60px; text-align: center; }
+    .small { width: 25px; }
+    #btnSalvarPDF {
+      margin: 10px auto;
+      display: block;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #clone-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: -1;
+    }
+  </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -16,43 +37,68 @@
   <div class="cabecalho">
     <label>Data: <input type="date" id="data"></label>
   </div>
-  <div class="table-wrapper">
-    <table id="tabela">
-      <thead>
-        <tr>
-          <th>LEITO</th><th>NOME</th><th>DIAGNÓSTICO</th>
-          <th>GLICEMIA</th><th>SUPLEMENTAÇÃO</th><th>GELO</th><th>FLUXO</th><th>BANHO</th><th>DISPOSITIVOS</th><th>EXAMES</th><th>OUTROS</th><th>TÉCNICO</th>
-        </tr>
-        <tr class="subhead">
-          <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
-          <th></th><th></th><th></th><th></th>
-        </tr>
-      </thead>
-      <tbody id="corpo-tabela"></tbody>
-    </table>
-  </div>
 
-  <script src="script.js"></script>
+  <table id="tabela">
+    <thead>
+      <tr>
+        <th>LEITO</th><th>NOME</th><th>DIAGNÓSTICO</th>
+        <th>GLICEMIA</th><th>SUPLEMENTAÇÃO</th><th>GELO</th><th>FLUXO</th><th>BANHO</th>
+        <th>DISPOSITIVOS</th><th>EXAMES</th><th>OUTROS</th><th>TÉCNICO</th>
+      </tr>
+    </thead>
+    <tbody id="corpo-tabela"></tbody>
+  </table>
+
+  <div id="clone-container"></div>
+
   <script>
-    // Código para salvar a tabela em PDF
+    const leitos = [1176,1177,1178,1179,1180,1181,1182,1183,1184,1186,1188,1190,1191,1192,1193,1194,1195,1196,1197,1198];
+    const corpo = document.getElementById("corpo-tabela");
+    leitos.forEach((leito, idx) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${leito}</td><td><input data-id="l${idx}-nome"></td><td><input data-id="l${idx}-diag"></td>${
+        [...Array(5)].map((_,i)=>`<td class="small"><input data-id="l${idx}-m${i}"></td>`).join("")
+      }<td><input data-id="l${idx}-fluxo"></td><td><input data-id="l${idx}-exames"></td><td><input data-id="l${idx}-alta"></td><td><input data-id="l${idx}-técnico"></td>`;
+      corpo.appendChild(tr);
+    });
+
+    window.onload = () => {
+      document.querySelectorAll("input[data-id]").forEach(inp => {
+        inp.value = localStorage.getItem(inp.getAttribute("data-id")) || "";
+        inp.oninput = () => localStorage.setItem(inp.getAttribute("data-id"), inp.value);
+      });
+      const dataInput = document.getElementById("data");
+      if(dataInput){
+        dataInput.value = localStorage.getItem("data") || "";
+        dataInput.oninput = () => localStorage.setItem("data", dataInput.value);
+      }
+    };
+
     const { jsPDF } = window.jspdf;
+
     document.getElementById("btnSalvarPDF").addEventListener("click", () => {
       const tabela = document.getElementById("tabela");
-      html2canvas(tabela).then(canvas => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF({
-          orientation: "landscape",
-          unit: "pt",
-          format: "a4"
-        });
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save("escala-ortopedia.pdf");
+      const cloneContainer = document.getElementById("clone-container");
+      
+      // Limpa clone anterior se existir
+      cloneContainer.innerHTML = "";
+
+      // Clona a tabela
+      const tabelaClone = tabela.cloneNode(true);
+
+      // Remove inputs e substitui pelo texto no clone
+      tabelaClone.querySelectorAll("input").forEach(input => {
+        const td = input.parentElement;
+        const texto = document.createTextNode(input.value);
+        td.innerHTML = "";
+        td.appendChild(texto);
       });
-    });
-  </script>
-</body>
-</html>
 
+      // Adiciona clone no container invisível
+      cloneContainer.appendChild(tabelaClone);
 
+      // Usa html2canvas para gerar imagem do clone
+      html2canvas(tabelaClone).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF('l', 'pt', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth()
