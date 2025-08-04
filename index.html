@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Escala Ortopedia - responsivo e PDF</title>
+<title>Escala Ortopedia - sem scroll horizontal</title>
 <style>
   * {
     box-sizing: border-box;
@@ -14,24 +14,31 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 11px;
-    table-layout: fixed; /* força células a terem largura igual */
+    font-size: 10px;
+    table-layout: fixed; /* fixa a largura das colunas */
+    word-break: break-word; /* quebra texto */
   }
   th, td {
     border: 1px solid #444;
-    padding: 4px;
-    min-width: 60px;
+    padding: 2px 4px;
+    min-width: 30px; /* largura mínima bem pequena */
+    max-width: 80px; /* limita largura para não estourar */
     text-align: center;
-    word-wrap: break-word; /* quebra texto pra caber na célula */
+    white-space: normal; /* permite quebra de linha */
   }
-  .small { width: 25px; }
+  .small {
+    width: 25px !important;
+    min-width: 25px !important;
+    max-width: 25px !important;
+  }
   input {
     width: 100%;
     border: none;
     background: transparent;
-    font-size: 11px;
+    font-size: 10px;
     padding: 2px;
     box-sizing: border-box;
+    white-space: normal; /* para input quebrar texto */
   }
   #btnSalvarPDF {
     margin: 12px auto;
