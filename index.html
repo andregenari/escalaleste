@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Escala Ortopedia</title>
 <style>
   * { box-sizing: border-box; }
@@ -22,26 +22,19 @@
     margin: 0;
   }
   input[type="date"] {
-    padding: 4px;
-    margin-top: 2px;
-    font-size: 12px;
-    max-width: 150px;
+    padding: 4px; margin-top: 2px;
+    font-size: 12px; max-width: 150px;
   }
   #btnPdf {
-    margin-left: auto;
-    padding: 6px 12px;
-    font-size: 14px;
-    cursor: pointer;
+    margin-left: auto; padding: 6px 12px;
+    font-size: 14px; cursor: pointer;
   }
   .table-wrapper {
-    overflow-x: hidden; /* evita scroll horizontal */
+    overflow-x: hidden;
   }
   table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 10px;
-    table-layout: fixed; /* força ajuste automático das colunas */
-    word-break: break-word;
+    width: 100%; border-collapse: collapse;
+    font-size: 10px; table-layout: fixed;
   }
   th, td {
     border: 1px solid #444;
@@ -49,22 +42,14 @@
     min-width: 30px;
     vertical-align: top;
     text-align: center;
+    word-wrap: break-word;
   }
-  .subhead th {
-    height: 4px;
-    padding: 2px;
-  }
+  .subhead th { height: 4px; padding: 2px; }
   td input {
-    width: 100%;
-    border: none;
-    background: transparent;
-    font-size: 10px;
-    padding: 1px 2px;
-    box-sizing: border-box;
+    width: 100%; border: none; background: transparent;
+    font-size: 10px; padding: 1px 2px; box-sizing: border-box;
   }
-  .small {
-    width: 20px;
-  }
+  .small { width: 20px; }
 </style>
 </head>
 <body>
@@ -78,10 +63,12 @@
     <thead>
       <tr>
         <th>LEITO</th><th>NOME</th><th>DIAGNÓSTICO</th>
-        <th>GLICEMIA</th><th>SUPLEMENTAÇÃO</th><th>GELO</th><th>FLUXO</th><th>BANHO</th><th>DISPOSITIVOS</th><th>EXAMES</th><th>OUTROS</th><th>TÉCNICO</th>
+        <th>GLICEMIA</th><th>SUPLEMENTAÇÃO</th><th>GELO</th><th>FLUXO</th><th>BANHO</th>
+        <th>DISPOSITIVOS</th><th>EXAMES</th><th>OUTROS</th><th>TÉCNICO</th>
       </tr>
       <tr class="subhead">
-        <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+        <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+        <th></th><th></th><th></th><th></th>
       </tr>
     </thead>
     <tbody id="corpo-tabela"></tbody>
@@ -127,17 +114,18 @@
 
   document.getElementById("btnPdf").addEventListener("click", () => {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'pt', 'a4');
-    doc.setFontSize(10);
-    doc.text("ESCALA ORTOPEDIA - LESTE", 40, 40);
-    doc.text(`Data: ${dataInput.value}`, 40, 60);
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+    doc.setFontSize(14);
+    doc.text("ESCALA ORTOPEDIA - LESTE", 14, 15);
+    doc.setFontSize(12);
+    doc.text(`Data: ${dataInput.value}`, 14, 23);
 
     const headers = [["LEITO","NOME","DIAGNÓSTICO","GLICEMIA","SUPLEMENTAÇÃO","GELO","FLUXO","BANHO","DISPOSITIVOS","EXAMES","OUTROS","TÉCNICO"]];
     const body = [];
 
-    leitos.forEach((leito, idx) => {
+    leitos.forEach((_, idx) => {
       body.push([
-        leito.toString(),
+        leitos[idx].toString(),
         localStorage.getItem(`l${idx}-nome`) || "",
         localStorage.getItem(`l${idx}-diag`) || "",
         localStorage.getItem(`l${idx}-m0`) || "",
@@ -153,13 +141,21 @@
     });
 
     doc.autoTable({
-      startY: 80,
+      startY: 30,
       head: headers,
       body: body,
-      styles: { fontSize: 7 },
-      margin: { left: 40, right: 40 },
-      tableWidth: 'auto',
-      headStyles: { fillColor: [100, 100, 100] },
+      styles: {
+        fontSize: 9,
+        cellPadding: 2
+      },
+      headStyles: {
+        fillColor: [100, 100, 100],
+        textColor: [255, 255, 255],
+        fontSize: 10
+      },
+      theme: 'striped',
+      margin: { left: 10, right: 10 },
+      tableWidth: 'auto'
     });
 
     doc.save("escala_ortopedia.pdf");
