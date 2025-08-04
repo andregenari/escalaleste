@@ -34,21 +34,21 @@
     cursor: pointer;
   }
   .table-wrapper {
-    overflow-x: auto;
+    overflow-x: hidden; /* evita scroll horizontal */
   }
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 11px;
-    table-layout: fixed;
+    font-size: 10px;
+    table-layout: fixed; /* força ajuste automático das colunas */
+    word-break: break-word;
   }
   th, td {
     border: 1px solid #444;
-    padding: 4px;
-    min-width: 40px;
+    padding: 3px 4px;
+    min-width: 30px;
     vertical-align: top;
     text-align: center;
-    word-wrap: break-word;
   }
   .subhead th {
     height: 4px;
@@ -58,12 +58,12 @@
     width: 100%;
     border: none;
     background: transparent;
-    font-size: 11px;
-    padding: 2px;
+    font-size: 10px;
+    padding: 1px 2px;
     box-sizing: border-box;
   }
   .small {
-    width: 25px;
+    width: 20px;
   }
 </style>
 </head>
@@ -103,70 +103,8 @@
       <td><input data-id="l${idx}-diag"></td>
       <td class="small"><input data-id="l${idx}-m0"></td>
       <td class="small"><input data-id="l${idx}-m1"></td>
-      <td class="small"><input data-id="l${idx}-m2"></td>
-      <td class="small"><input data-id="l${idx}-m3"></td>
-      <td class="small"><input data-id="l${idx}-m4"></td>
-      <td><input data-id="l${idx}-fluxo"></td>
-      <td><input data-id="l${idx}-exames"></td>
-      <td><input data-id="l${idx}-alta"></td>
-      <td><input data-id="l${idx}-assinatura"></td>
-    `;
-    corpo.appendChild(tr);
-  });
+      <td class="small"><input data-id="l${idx
 
-  // Carregar e salvar data
-  const dataInput = document.getElementById("data");
-  dataInput.value = localStorage.getItem("data") || "";
-  dataInput.oninput = () => localStorage.setItem("data", dataInput.value);
-
-  // Carregar e salvar inputs da tabela
-  window.onload = () => {
-    document.querySelectorAll("input[data-id]").forEach(input => {
-      input.value = localStorage.getItem(input.getAttribute("data-id")) || "";
-      input.oninput = () => localStorage.setItem(input.getAttribute("data-id"), input.value);
-    });
-  };
-
-  // Gerar PDF
-  document.getElementById("btnPdf").addEventListener("click", () => {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'pt', 'a4');
-    doc.setFontSize(10);
-    doc.text("ESCALA ORTOPEDIA - LESTE", 40, 40);
-    doc.text(`Data: ${dataInput.value}`, 40, 60);
-
-    const headers = [["LEITO","NOME","DIAGNÓSTICO","GLICEMIA","SUPLEMENTAÇÃO","GELO","FLUXO","BANHO","DISPOSITIVOS","EXAMES","OUTROS","TÉCNICO"]];
-    const body = [];
-
-    leitos.forEach((leito, idx) => {
-      body.push([
-        leito.toString(),
-        localStorage.getItem(`l${idx}-nome`) || "",
-        localStorage.getItem(`l${idx}-diag`) || "",
-        localStorage.getItem(`l${idx}-m0`) || "",
-        localStorage.getItem(`l${idx}-m1`) || "",
-        localStorage.getItem(`l${idx}-m2`) || "",
-        localStorage.getItem(`l${idx}-m3`) || "",
-        localStorage.getItem(`l${idx}-m4`) || "",
-        localStorage.getItem(`l${idx}-fluxo`) || "",
-        localStorage.getItem(`l${idx}-exames`) || "",
-        localStorage.getItem(`l${idx}-alta`) || "",
-        localStorage.getItem(`l${idx}-assinatura`) || ""
-      ]);
-    });
-
-    doc.autoTable({
-      startY: 80,
-      head: headers,
-      body: body,
-      styles: { fontSize: 8 },
-      margin: { left: 40, right: 40 },
-      tableWidth: 'auto',
-      headStyles: { fillColor: [100, 100, 100] },
-    });
-
-    doc.save("escala_ortopedia.pdf");
-  });
 </script>
 </body>
 </html>
