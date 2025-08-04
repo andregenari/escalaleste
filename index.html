@@ -80,25 +80,30 @@
       const tabela = document.getElementById("tabela");
       const cloneContainer = document.getElementById("clone-container");
       
-      // Limpa clone anterior se existir
       cloneContainer.innerHTML = "";
 
-      // Clona a tabela
       const tabelaClone = tabela.cloneNode(true);
 
-      // Remove inputs e substitui pelo texto no clone
       tabelaClone.querySelectorAll("input").forEach(input => {
         const td = input.parentElement;
-        const texto = document.createTextNode(input.value);
-        td.innerHTML = "";
-        td.appendChild(texto);
+        td.textContent = input.value;
       });
 
-      // Adiciona clone no container invisível
       cloneContainer.appendChild(tabelaClone);
 
-      // Usa html2canvas para gerar imagem do clone
       html2canvas(tabelaClone).then(canvas => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF('l', 'pt', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth()
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save("escala_ortopedia.pdf");
+      }).catch(err => {
+        alert("Erro ao gerar PDF: " + err);
+      });
+    });
+  </script>
+</body>
+</html>
+
