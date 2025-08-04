@@ -3,27 +3,42 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Escala Ortopedia - PDF correto</title>
+<title>Escala Ortopedia - responsivo e PDF</title>
 <style>
-  body { font-family: sans-serif; padding: 12px; }
+  * {
+    box-sizing: border-box;
+  }
+  body { font-family: sans-serif; padding: 12px; margin: 0; }
   h1 { text-align: center; margin-bottom: 8px; }
   .cabecalho { margin-bottom: 12px; }
-  table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  th, td { border: 1px solid #444; padding: 4px; min-width: 60px; text-align: center; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    table-layout: fixed; /* força células a terem largura igual */
+  }
+  th, td {
+    border: 1px solid #444;
+    padding: 4px;
+    min-width: 60px;
+    text-align: center;
+    word-wrap: break-word; /* quebra texto pra caber na célula */
+  }
   .small { width: 25px; }
+  input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 11px;
+    padding: 2px;
+    box-sizing: border-box;
+  }
   #btnSalvarPDF {
     margin: 12px auto;
     display: block;
     padding: 8px 16px;
     font-size: 14px;
     cursor: pointer;
-  }
-  #clone-container {
-    position: fixed;
-    top: -9999px;
-    left: -9999px;
-    opacity: 0;
-    pointer-events: none;
   }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -50,7 +65,7 @@
   <tbody id="corpo-tabela"></tbody>
 </table>
 
-<div id="clone-container"></div>
+<div id="clone-container" style="position: fixed; top: -9999px; left: -9999px; opacity: 0; pointer-events: none;"></div>
 
 <script>
   const leitos = [1176,1177,1178,1179,1180,1181,1182,1183,1184,1186,1188,1190,1191,1192,1193,1194,1195,1196,1197,1198];
@@ -96,9 +111,19 @@
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF('l', 'pt', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const scale = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+
+      const imgScaledWidth = imgWidth * scale;
+      const imgScaledHeight = imgHeight * scale;
+
+      const x = (pdfWidth - imgScaledWidth) / 2;
+      const y = (pdfHeight - imgScaledHeight) / 2;
+
+      pdf.addImage(imgData, 'PNG', x, y, imgScaledWidth, imgScaledHeight);
       pdf.save("escala_ortopedia.pdf");
     }).catch(err => {
       alert("Erro ao gerar PDF: " + err);
@@ -108,4 +133,5 @@
 
 </body>
 </html>
+
 
