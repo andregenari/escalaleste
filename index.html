@@ -1,97 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Escala Ortopedia</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { font-family: sans-serif; padding: 12px; }
-    h1 { text-align: center; margin-bottom: 8px; }
-    .cabecalho {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .cabecalho label {
-      font-size: 12px;
-      display: flex;
-      flex-direction: column;
-    }
-    input {
-      padding: 4px;
-      margin-top: 2px;
-      font-size: 12px;
-    }
-    .table-wrapper {
-      overflow-x: hidden; /* remove scroll horizontal */
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11px;
-      table-layout: fixed; /* força largura fixa para colunas */
-      word-wrap: break-word;
-    }
-    th, td {
-      border: 1px solid #444;
-      padding: 4px;
-      min-width: 60px;
-      vertical-align: top;
-      text-align: center;
-      overflow-wrap: break-word;
-    }
-    th.sem-titulo {
-      width: 20px;
-    }
-    .subhead th {
-      height: 4px;
-      padding: 2px;
-    }
-    td input {
-      width: 100%;
-      border: none;
-      background: transparent;
-      font-size: 11px;
-      padding: 2px;
-    }
-    .small {
-      width: 25px;
-    }
-    button#savePdf {
-      margin-top: 15px;
-      padding: 6px 12px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Escala Ortopedia</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: sans-serif; padding: 12px; margin:0; }
+  h1 { text-align: center; margin-bottom: 8px; }
+  .cabecalho { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; align-items: center; }
+  .cabecalho label { font-size: 12px; display: flex; flex-direction: column; margin:0; }
+  input[type="date"] { padding: 4px; margin-top: 2px; font-size: 12px; max-width: 150px; }
+  .table-wrapper { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
+  th, td { border: 1px solid #444; padding: 4px; min-width: 60px; vertical-align: top; text-align: center; word-wrap: break-word; }
+  .subhead th { height: 4px; padding: 2px; }
+  td input { width: 100%; border: none; background: transparent; font-size: 11px; padding: 2px; box-sizing: border-box; }
+  .small { width: 25px; }
+  #btnPdf { margin-left: auto; padding: 6px 12px; font-size: 14px; cursor: pointer; }
+</style>
 </head>
 <body>
-  <h1>ESCALA ORTOPEDIA - LESTE</h1>
-  <div class="cabecalho">
-    <label>Data: <input type="date" id="data"></label>
-  </div>
-  <div class="table-wrapper">
-    <table id="tabela">
-      <thead>
-        <tr>
-          <th>LEITO</th><th>NOME</th><th>DIAGNÓSTICO</th>
-          <th>GLICEMIA</th><th>SUPLEMENTAÇÃO</th><th>GELO</th><th>FLUXO</th><th>BANHO</th><th>DISPOSITIVOS</th><th>EXAMES</th><th>OUTROS</th><th>TÉCNICO</th>
-        </tr>
-        <tr class="subhead">
-          <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
-        </tr>
-      </thead>
-      <tbody id="corpo-tabela"></tbody>
-    </table>
-  </div>
-  <button id="savePdf">Salvar PDF</button>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    const leitos = [1176,1177,1178,1179,1180,1181,1182,1183,1184,1186,1188,1190,1191,1192,1193,1194,1195,1196,1197,1198];
-    const corpo = document.getElementById("corpo-tabela");
-    leitos.forEach((leito, idx) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${leito}</td><td><input data-id="l${idx
+<h1>ESCALA ORTOPEDIA - LESTE</h1>
+<div class="cabecalho">
+  <label>Data: <input type="date" id="data"></label>
+  <button id="btnPdf">Salvar PDF</button>
+</div>
+<div class="table-wrapper">
+  <table id="tabela">
+    <thead>
+      <tr>
+        <th>LEITO</th><th>NOME</th><th>DIAGNÓSTICO</th>
+        <th>GLICEMIA</th><th>SUPLEMENTAÇÃO</th><th>GELO</th><th>FLUXO</th><th>BANHO</th><th>DISPOSITIVOS</th><th>EXAMES</th><th>OUTROS</th><th>TÉCNICO</th>
+      </tr>
+      <tr class="subhead">
+        <th></th><th></th><th></th><th></th><th></th><t
