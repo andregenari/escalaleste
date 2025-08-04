@@ -71,4 +71,103 @@
 <h1>ESCALA ORTOPEDIA - LESTE</h1>
 <div class="cabecalho">
   <label>Data: <input type="date" id="data"></label>
-  <button
+  <button id="btnPdf">Salvar PDF</button>
+</div>
+<div class="table-wrapper">
+  <table id="tabela">
+    <thead>
+      <tr>
+        <th>LEITO</th><th>NOME</th><th>DIAGNÓSTICO</th>
+        <th>GLICEMIA</th><th>SUPLEMENTAÇÃO</th><th>GELO</th><th>FLUXO</th><th>BANHO</th><th>DISPOSITIVOS</th><th>EXAMES</th><th>OUTROS</th><th>TÉCNICO</th>
+      </tr>
+      <tr class="subhead">
+        <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+      </tr>
+    </thead>
+    <tbody id="corpo-tabela"></tbody>
+  </table>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+  const leitos = [1176,1177,1178,1179,1180,1181,1182,1183,1184,1186,1188,1190,1191,1192,1193,1194,1195,1196,1197,1198];
+  const corpo = document.getElementById("corpo-tabela");
+
+  leitos.forEach((leito, idx) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${leito}</td>
+      <td><input data-id="l${idx}-nome"></td>
+      <td><input data-id="l${idx}-diag"></td>
+      <td class="small"><input data-id="l${idx}-m0"></td>
+      <td class="small"><input data-id="l${idx}-m1"></td>
+      <td class="small"><input data-id="l${idx}-m2"></td>
+      <td class="small"><input data-id="l${idx}-m3"></td>
+      <td class="small"><input data-id="l${idx}-m4"></td>
+      <td><input data-id="l${idx}-fluxo"></td>
+      <td><input data-id="l${idx}-exames"></td>
+      <td><input data-id="l${idx}-alta"></td>
+      <td><input data-id="l${idx}-assinatura"></td>
+    `;
+    corpo.appendChild(tr);
+  });
+
+  // Carregar e salvar data
+  const dataInput = document.getElementById("data");
+  dataInput.value = localStorage.getItem("data") || "";
+  dataInput.oninput = () => localStorage.setItem("data", dataInput.value);
+
+  // Carregar e salvar inputs da tabela
+  window.onload = () => {
+    document.querySelectorAll("input[data-id]").forEach(input => {
+      input.value = localStorage.getItem(input.getAttribute("data-id")) || "";
+      input.oninput = () => localStorage.setItem(input.getAttribute("data-id"), input.value);
+    });
+  };
+
+  // Gerar PDF
+  document.getElementById("btnPdf").addEventListener("click", () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'pt', 'a4');
+    doc.setFontSize(10);
+    doc.text("ESCALA ORTOPEDIA - LESTE", 40, 40);
+    doc.text(`Data: ${dataInput.value}`, 40, 60);
+
+    const headers = [["LEITO","NOME","DIAGNÓSTICO","GLICEMIA","SUPLEMENTAÇÃO","GELO","FLUXO","BANHO","DISPOSITIVOS","EXAMES","OUTROS","TÉCNICO"]];
+    const body = [];
+
+    leitos.forEach((leito, idx) => {
+      body.push([
+        leito.toString(),
+        localStorage.getItem(`l${idx}-nome`) || "",
+        localStorage.getItem(`l${idx}-diag`) || "",
+        localStorage.getItem(`l${idx}-m0`) || "",
+        localStorage.getItem(`l${idx}-m1`) || "",
+        localStorage.getItem(`l${idx}-m2`) || "",
+        localStorage.getItem(`l${idx}-m3`) || "",
+        localStorage.getItem(`l${idx}-m4`) || "",
+        localStorage.getItem(`l${idx}-fluxo`) || "",
+        localStorage.getItem(`l${idx}-exames`) || "",
+        localStorage.getItem(`l${idx}-alta`) || "",
+        localStorage.getItem(`l${idx}-assinatura`) || ""
+      ]);
+    });
+
+    doc.autoTable({
+      startY: 80,
+      head: headers,
+      body: body,
+      styles: { fontSize: 8 },
+      margin: { left: 40, right: 40 },
+      tableWidth: 'auto',
+      headStyles: { fillColor: [100, 100, 100] },
+    });
+
+    doc.save("escala_ortopedia.pdf");
+  });
+</script>
+</body>
+</html>
+
