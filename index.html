@@ -2,22 +2,26 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Escala Ortopedia</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
+  <!-- Bibliotecas para salvar em PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <h1>ESCALA ORTOPEDIA - LESTE</h1>
+  <button id="btnSalvarPDF">Salvar PDF</button>
+
   <div class="cabecalho">
-    <label>Data: <input type="date" id="data" /></label>
+    <label>Data: <input type="date" id="data"></label>
   </div>
   <div class="table-wrapper">
     <table id="tabela">
       <thead>
         <tr>
           <th>LEITO</th><th>NOME</th><th>DIAGNÓSTICO</th>
-          <th>GLICEMIA</th><th>SUPLEMENTAÇÃO</th><th>GELO</th><th>FLUXO</th><th>BANHO</th>
-          <th>DISPOSITIVOS</th><th>EXAMES</th><th>OUTROS</th><th>TÉCNICO</th>
+          <th>GLICEMIA</th><th>SUPLEMENTAÇÃO</th><th>GELO</th><th>FLUXO</th><th>BANHO</th><th>DISPOSITIVOS</th><th>EXAMES</th><th>OUTROS</th><th>TÉCNICO</th>
         </tr>
         <tr class="subhead">
           <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
@@ -27,7 +31,28 @@
       <tbody id="corpo-tabela"></tbody>
     </table>
   </div>
-  <script type="module" src="script.js"></script>
+
+  <script src="script.js"></script>
+  <script>
+    // Código para salvar a tabela em PDF
+    const { jsPDF } = window.jspdf;
+    document.getElementById("btnSalvarPDF").addEventListener("click", () => {
+      const tabela = document.getElementById("tabela");
+      html2canvas(tabela).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF({
+          orientation: "landscape",
+          unit: "pt",
+          format: "a4"
+        });
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        pdf.save("escala-ortopedia.pdf");
+      });
+    });
+  </script>
 </body>
 </html>
+
 
